@@ -1,4 +1,7 @@
-<html><head><base href="https://cyberedu.websim.org/"><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>CyberQuiz: Aprenda Cibersegurança</title>
+<html>
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CyberQuiz: Grupo Cantanhede</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://smtpjs.com/v3/smtp.js"></script>
 <style>
@@ -17,7 +20,7 @@
         box-sizing: border-box;
     }
     .quiz-container {
-        background-color: rgba(22, 33, 62, 0.8);
+        background-color: #0A121D;
         border-radius: 20px;
         padding: 30px;
         box-shadow: 0 10px 30px rgba(0,0,0,0.3);
@@ -143,13 +146,17 @@
     .pulse {
         animation: pulse 1s infinite;
     }
+    .text-bemvindo{
+        margin-bottom: 30px;
+    }
 </style>
 </head>
 <body>
 <div class="quiz-container">
-    <h1><i class="fas fa-shield-alt"></i> CyberQuiz: Aprenda Cibersegurança</h1>
+    <h1><i class="fas fa-shield-alt"></i> CyberQuiz: Semana de Cibersegurança</h1>
     <div id="welcome" class="welcome">
-        <p>Bem-vindo ao CyberQuiz! Teste seus conhecimentos em segurança digital.</p>
+        <img src="assets/logo-empresas.png" alt="" style="width: 380px;">
+        <p class="text-bemvindo">Bem-vindo ao CyberQuiz! Teste seus conhecimentos em segurança digital.</p>
         <input type="text" id="participant-name" placeholder="Digite seu nome">
         <button id="start-btn" class="start-btn"><i class="fas fa-play"></i> Iniciar Quiz</button>
     </div>
