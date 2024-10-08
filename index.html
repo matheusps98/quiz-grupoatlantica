@@ -1,0 +1,338 @@
+<html><head><base href="https://cyberedu.websim.org/"><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>CyberQuiz: Aprenda Cibersegurança</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+
+    body {
+        font-family: 'Roboto', sans-serif;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        color: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+    .quiz-container {
+        background-color: rgba(22, 33, 62, 0.8);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        max-width: 600px;
+        width: 100%;
+        backdrop-filter: blur(10px);
+    }
+    h1 {
+        text-align: center;
+        color: #00fff5;
+        font-size: 2.5em;
+        margin-bottom: 30px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+    .question {
+        font-size: 1.2em;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+    }
+    .question i {
+        font-size: 1.5em;
+        margin-right: 15px;
+        color: #00fff5;
+    }
+    .options {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    .option {
+        background-color: #0f3460;
+        border: none;
+        border-radius: 10px;
+        padding: 15px;
+        color: #ffffff;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1em;
+        text-align: left;
+        display: flex;
+        align-items: center;
+    }
+    .option:hover {
+        background-color: #e94560;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4);
+    }
+    .option i {
+        margin-right: 10px;
+    }
+    .feedback {
+        margin-top: 20px;
+        font-weight: bold;
+        text-align: center;
+        font-size: 1.1em;
+    }
+    .next-btn, .restart-btn, .start-btn {
+        display: block;
+        margin: 20px auto 0;
+        background-color: #00fff5;
+        color: #1a1a2e;
+        border: none;
+        border-radius: 10px;
+        padding: 15px 30px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 1.1em;
+        transition: all 0.3s ease;
+    }
+    .next-btn:hover, .restart-btn:hover, .start-btn:hover {
+        background-color: #e94560;
+        color: #ffffff;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4);
+    }
+    .score {
+        text-align: center;
+        font-size: 1.2em;
+        margin-top: 20px;
+        color: #00fff5;
+    }
+    .hidden {
+        display: none;
+    }
+    .welcome {
+        text-align: center;
+    }
+    #participant-name {
+        display: block;
+        width: 100%;
+        padding: 15px;
+        margin-top: 15px;
+        border: none;
+        border-radius: 10px;
+        background-color: #0f3460;
+        color: #ffffff;
+        font-size: 1em;
+        transition: all 0.3s ease;
+    }
+    #participant-name:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px #00fff5;
+    }
+    .progress-bar {
+        width: 100%;
+        height: 10px;
+        background-color: #0f3460;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        overflow: hidden;
+    }
+    .progress {
+        height: 100%;
+        background-color: #00fff5;
+        transition: width 0.5s ease;
+    }
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+    .pulse {
+        animation: pulse 1s infinite;
+    }
+</style>
+</head>
+<body>
+<div class="quiz-container">
+    <h1><i class="fas fa-shield-alt"></i> CyberQuiz: Aprenda Cibersegurança</h1>
+    <div id="welcome" class="welcome">
+        <p>Bem-vindo ao CyberQuiz! Teste seus conhecimentos em segurança digital.</p>
+        <input type="text" id="participant-name" placeholder="Digite seu nome">
+        <button id="start-btn" class="start-btn"><i class="fas fa-play"></i> Iniciar Quiz</button>
+    </div>
+    <div id="quiz-content" class="hidden">
+        <div class="progress-bar">
+            <div id="progress" class="progress"></div>
+        </div>
+        <div id="question" class="question"></div>
+        <div id="options" class="options"></div>
+        <div id="feedback" class="feedback"></div>
+        <button id="next-btn" class="next-btn hidden"><i class="fas fa-arrow-right"></i> Próxima Pergunta</button>
+        <button id="restart-btn" class="restart-btn hidden"><i class="fas fa-redo"></i> Reiniciar Quiz</button>
+        <div id="score" class="score"></div>
+    </div>
+</div>
+
+<script>
+const quizData = [
+    {
+        question: "O que é uma senha forte?",
+        icon: "fa-key",
+        options: [
+            { text: "Uma senha com o nome do seu animal de estimação", icon: "fa-paw" },
+            { text: "Uma combinação de letras maiúsculas, minúsculas, números e símbolos", icon: "fa-lock" },
+            { text: "A mesma senha que você usa em todas as contas", icon: "fa-copy" },
+            { text: "Sua data de nascimento", icon: "fa-calendar" }
+        ],
+        correct: 1
+    },
+    {
+        question: "O que é phishing?",
+        icon: "fa-fish",
+        options: [
+            { text: "Um esporte aquático", icon: "fa-swimmer" },
+            { text: "Uma técnica de pesca", icon: "fa-fish" },
+            { text: "Uma tentativa de obter informações sensíveis se passando por uma entidade confiável", icon: "fa-user-secret" },
+            { text: "Um novo tipo de rede social", icon: "fa-share-alt" }
+        ],
+        correct: 2
+    },
+    {
+        question: "Por que é importante manter o software atualizado?",
+        icon: "fa-sync",
+        options: [
+            { text: "Para ter as últimas funcionalidades", icon: "fa-star" },
+            { text: "Para corrigir bugs e vulnerabilidades de segurança", icon: "fa-shield-alt" },
+            { text: "Porque as empresas gostam de incomodar os usuários", icon: "fa-angry" },
+            { text: "Não é importante, são apenas atualizações desnecessárias", icon: "fa-ban" }
+        ],
+        correct: 1
+    },
+    {
+        question: "O que é um firewall?",
+        icon: "fa-fire",
+        options: [
+            { text: "Um tipo de vírus de computador", icon: "fa-bug" },
+            { text: "Uma parede à prova de fogo", icon: "fa-fire-extinguisher" },
+            { text: "Um sistema que monitora e controla o tráfego de rede", icon: "fa-shield-alt" },
+            { text: "Um software para edição de fotos", icon: "fa-image" }
+        ],
+        correct: 2
+    },
+    {
+        question: "O que você deve fazer se receber um e-mail suspeito?",
+        icon: "fa-envelope",
+        options: [
+            { text: "Abrir todos os anexos para verificar", icon: "fa-file-archive" },
+            { text: "Responder pedindo mais informações", icon: "fa-reply" },
+            { text: "Ignorar e excluir o e-mail", icon: "fa-trash" },
+            { text: "Clicar em todos os links para ver onde levam", icon: "fa-link" }
+        ],
+        correct: 2
+    }
+];
+
+let currentQuestion = 0;
+let score = 0;
+let participantName = "";
+
+const welcomeEl = document.getElementById('welcome');
+const quizContentEl = document.getElementById('quiz-content');
+const questionEl = document.getElementById('question');
+const optionsEl = document.getElementById('options');
+const feedbackEl = document.getElementById('feedback');
+const nextBtn = document.getElementById('next-btn');
+const restartBtn = document.getElementById('restart-btn');
+const scoreEl = document.getElementById('score');
+const startBtn = document.getElementById('start-btn');
+const participantNameInput = document.getElementById('participant-name');
+const progressBar = document.getElementById('progress');
+
+startBtn.addEventListener('click', startQuiz);
+
+function startQuiz() {
+    participantName = participantNameInput.value.trim();
+    if (participantName === "") {
+        alert("Por favor, insira seu nome antes de começar o quiz.");
+        return;
+    }
+    welcomeEl.classList.add('hidden');
+    quizContentEl.classList.remove('hidden');
+    loadQuestion();
+    updateProgressBar();
+}
+
+function loadQuestion() {
+    const question = quizData[currentQuestion];
+    questionEl.innerHTML = `<i class="fas ${question.icon}"></i> ${question.question}`;
+    
+    optionsEl.innerHTML = '';
+    question.options.forEach((option, index) => {
+        const button = document.createElement('button');
+        button.innerHTML = `<i class="fas ${option.icon}"></i> ${option.text}`;
+        button.classList.add('option');
+        button.addEventListener('click', () => selectOption(index));
+        optionsEl.appendChild(button);
+    });
+    
+    feedbackEl.textContent = '';
+    nextBtn.classList.add('hidden');
+}
+
+function selectOption(index) {
+    const question = quizData[currentQuestion];
+    const options = optionsEl.getElementsByClassName('option');
+    
+    for (let i = 0; i < options.length; i++) {
+        options[i].disabled = true;
+        if (i === question.correct) {
+            options[i].style.backgroundColor = '#4CAF50';
+        }
+    }
+    
+    if (index === question.correct) {
+        feedbackEl.innerHTML = '<i class="fas fa-check-circle"></i> Correto!';
+        feedbackEl.style.color = '#4CAF50';
+        score++;
+        options[index].classList.add('pulse');
+    } else {
+        feedbackEl.innerHTML = '<i class="fas fa-times-circle"></i> Incorreto. A resposta correta está destacada.';
+        feedbackEl.style.color = '#e94560';
+        options[index].style.backgroundColor = '#e94560';
+    }
+    
+    nextBtn.classList.remove('hidden');
+}
+
+function nextQuestion() {
+    currentQuestion++;
+    if (currentQuestion < quizData.length) {
+        loadQuestion();
+        updateProgressBar();
+    } else {
+        showResult();
+    }
+}
+
+function showResult() {
+    questionEl.innerHTML = '<i class="fas fa-trophy"></i> Quiz Concluído!';
+    optionsEl.innerHTML = '';
+    feedbackEl.innerHTML = `Parabéns, ${participantName}! Você acertou ${score} de ${quizData.length} perguntas.`;
+    nextBtn.classList.add('hidden');
+    restartBtn.classList.remove('hidden');
+    scoreEl.innerHTML = `<i class="fas fa-star"></i> Pontuação Final: ${score}/${quizData.length}`;
+    progressBar.style.width = '100%';
+}
+
+function restartQuiz() {
+    currentQuestion = 0;
+    score = 0;
+    welcomeEl.classList.remove('hidden');
+    quizContentEl.classList.add('hidden');
+    restartBtn.classList.add('hidden');
+    scoreEl.textContent = '';
+    participantNameInput.value = '';
+    progressBar.style.width = '0%';
+}
+
+function updateProgressBar() {
+    const progress = ((currentQuestion + 1) / quizData.length) * 100;
+    progressBar.style.width = `${progress}%`;
+}
+
+nextBtn.addEventListener('click', nextQuestion);
+restartBtn.addEventListener('click', restartQuiz);
+</script>
+</body></html>
