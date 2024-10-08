@@ -1,5 +1,6 @@
 <html><head><base href="https://cyberedu.websim.org/"><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>CyberQuiz: Aprenda Cibersegurança</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://smtpjs.com/v3/smtp.js"></script>
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
 
@@ -74,7 +75,7 @@
         text-align: center;
         font-size: 1.1em;
     }
-    .next-btn, .restart-btn, .start-btn {
+    .next-btn, .start-btn {
         display: block;
         margin: 20px auto 0;
         background-color: #00fff5;
@@ -87,7 +88,7 @@
         font-size: 1.1em;
         transition: all 0.3s ease;
     }
-    .next-btn:hover, .restart-btn:hover, .start-btn:hover {
+    .next-btn:hover, .start-btn:hover {
         background-color: #e94560;
         color: #ffffff;
         transform: translateY(-3px);
@@ -160,7 +161,6 @@
         <div id="options" class="options"></div>
         <div id="feedback" class="feedback"></div>
         <button id="next-btn" class="next-btn hidden"><i class="fas fa-arrow-right"></i> Próxima Pergunta</button>
-        <button id="restart-btn" class="restart-btn hidden"><i class="fas fa-redo"></i> Reiniciar Quiz</button>
         <div id="score" class="score"></div>
     </div>
 </div>
@@ -234,7 +234,6 @@ const questionEl = document.getElementById('question');
 const optionsEl = document.getElementById('options');
 const feedbackEl = document.getElementById('feedback');
 const nextBtn = document.getElementById('next-btn');
-const restartBtn = document.getElementById('restart-btn');
 const scoreEl = document.getElementById('score');
 const startBtn = document.getElementById('start-btn');
 const participantNameInput = document.getElementById('participant-name');
@@ -311,20 +310,23 @@ function showResult() {
     optionsEl.innerHTML = '';
     feedbackEl.innerHTML = `Parabéns, ${participantName}! Você acertou ${score} de ${quizData.length} perguntas.`;
     nextBtn.classList.add('hidden');
-    restartBtn.classList.remove('hidden');
     scoreEl.innerHTML = `<i class="fas fa-star"></i> Pontuação Final: ${score}/${quizData.length}`;
     progressBar.style.width = '100%';
+
+    // Add the "Share with Gmail" button
+    const shareButton = document.createElement('button');
+    shareButton.innerHTML = '<i class="fas fa-share"></i> Compartilhar via Gmail';
+    shareButton.classList.add('start-btn');
+    shareButton.addEventListener('click', shareViaGmail);
+    quizContentEl.appendChild(shareButton);
 }
 
-function restartQuiz() {
-    currentQuestion = 0;
-    score = 0;
-    welcomeEl.classList.remove('hidden');
-    quizContentEl.classList.add('hidden');
-    restartBtn.classList.add('hidden');
-    scoreEl.textContent = '';
-    participantNameInput.value = '';
-    progressBar.style.width = '0%';
+function shareViaGmail() {
+    const subject = "Meu resultado no CyberQuiz!";
+    const body = `Olá,\n\nAcabei de completar o CyberQuiz sobre Cibersegurança e quero compartilhar meu resultado com você!\n\nMeu nome: ${participantName}\nPontuação: ${score}/${quizData.length}\n\nFaça o quiz você também e veja quanto sabe sobre segurança digital!\n\nAté mais!`;
+    
+    const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailtoLink;
 }
 
 function updateProgressBar() {
@@ -333,6 +335,5 @@ function updateProgressBar() {
 }
 
 nextBtn.addEventListener('click', nextQuestion);
-restartBtn.addEventListener('click', restartQuiz);
 </script>
 </body></html>
